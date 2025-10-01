@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>لوحة المسؤول</title>
+<style>
+body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align:center; background:#f9f9f9; padding-top:30px;}
+.box{width:350px;margin:auto;padding:20px;background:white;border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.2);}
+input{width:90%;padding:10px;margin:8px 0;border-radius:5px;border:1px solid #ccc;}
+button{padding:10px;width:95%; background:#28a745;color:white;border:none;border-radius:6px;cursor:pointer;}
+table{width:80%; margin:20px auto;border-collapse:collapse;}
+th,td{border:1px solid #ccc;padding:10px;}
+</style>
+</head>
+<body>
+<h2>👑 لوحة تحكم المسؤول</h2>
+<div class="box">
+<h3>➕ إضافة حساب طالب</h3>
+<input id="username" placeholder="اسم المستخدم">
+<input id="password" type="password" placeholder="كلمة المرور">
+<input id="fullname" placeholder="الاسم الرباعي">
+<button onclick="addStudent()">إضافة</button>
+</div>
+
+<h3>📋 قائمة الطلاب</h3>
+<table>
+<thead><tr><th>اسم المستخدم</th><th>الاسم الرباعي</th></tr></thead>
+<tbody id="studentList"></tbody>
+</table>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users")) || {
+  "admin": {pass:"1234", name:"المسؤول العام", role:"admin"},
+  "teacher": {pass:"5678", name:"رائد الفصل خالد", role:"teacher"}
+};
+
+function addStudent(){
+  const user=document.getElementById("username").value.trim();
+  const pass=document.getElementById("password").value.trim();
+  const name=document.getElementById("fullname").value.trim();
+  if(!user || !pass || !name){ alert("املأ جميع الحقول"); return; }
+  if(users[user]){ alert("اسم المستخدم موجود مسبقاً"); return; }
+  users[user]={pass,name,role:"student"};
+  localStorage.setItem("users",JSON.stringify(users));
+  showStudents();
+  alert("✅ تمت إضافة الطالب بنجاح");
+}
+
+function showStudents(){
+  const tbody = document.getElementById("studentList");
+  tbody.innerHTML = "";
+  const students = [];
+  for(let u in users){
+    if(users[u].role==="student") students.push({username:u,name:users[u].name});
+  }
+  students.sort((a,b)=>a.name.localeCompare(b.name)); // ترتيب أبجدي
+  for(let s of students){
+    tbody.innerHTML += `<tr><td>${s.username}</td><td>${s.name}</td></tr>`;
+  }
+}
+
+showStudents();
+</script>
+</body>
+</html>
